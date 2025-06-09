@@ -1,8 +1,95 @@
+import { useEffect, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import ProductCard from "@/components/ProductCard";
+import { Product } from "@/types/product";
+import { fetchExchangeRateJPYtoCAD } from "@/lib/currency";
+
 export default function Home() {
+  const [exchangeRate, setExchangeRate] = useState<number>(0);
+  const categories = ["魚", "肉", "野菜", "フルーツ", "スイーツ"];
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const visibleProducts =
+    selectedCategories.length === 0
+      ? products
+      : products.filter((product) =>
+          selectedCategories.includes(product.category)
+        );
+
+  useEffect(() => {
+    const fetchRate = async () => {
+      const rate = await fetchExchangeRateJPYtoCAD();
+      setExchangeRate(rate);
+    };
+    fetchRate();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const querySnapshot = await getDocs(collection(db, "products"));
+      const now = new Date();
+
+      const data = querySnapshot.docs
+        .map((doc) => {
+          const d = doc.data();
+          return {
+            id: doc.id,
+            name: d.name,
+            priceJPY: d.priceJPY,
+            category: d.category,
+            availableFrom: d.availableFrom,
+            availableTo: d.availableTo,
+          } as Product;
+        })
+        .filter((product) => {
+          const from = product.availableFrom?.toDate?.() ?? new Date(0);
+          const to = product.availableTo?.toDate?.() ?? new Date(9999, 11, 31);
+          return from <= now && now <= to;
+        });
+
+      setProducts(data);
+    };
+    fetchData();
+  }, []);
+
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold text-red-500">Tailwind OK</h1>
-      <p className="mt-4 text-gray-600">これは Tailwind のテスト表示です。</p>
-    </div>
+    <main className="p-8">
+      <h1 className="text-2xl font-bold mb-6">商品一覧</h1>
+      <div className="mb-6">
+        <h2 className="text-md font-semibold mb-2">カテゴリで絞り込み</h2>
+        <div className="flex flex-wrap gap-4">
+          {categories.map((cat) => (
+            <label key={cat} className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                value={cat}
+                checked={selectedCategories.includes(cat)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setSelectedCategories((prev) =>
+                    prev.includes(value)
+                      ? prev.filter((c) => c !== value)
+                      : [...prev, value]
+                  );
+                }}
+              />
+              <span>{cat}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {visibleProducts.map((product) => (
+          <ProductCard
+            key={product.id}
+            name={product.name}
+            priceJPY={product.priceJPY}
+            category={product.category}
+            priceCAD={Math.round(product.priceJPY * exchangeRate)}
+          />
+        ))}
+      </div>
+    </main>
   );
 }
