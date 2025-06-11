@@ -10,12 +10,22 @@ export default function Home() {
   const categories = ["魚", "肉", "野菜", "フルーツ", "スイーツ"];
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
-  const visibleProducts =
-    selectedCategories.length === 0
-      ? products
-      : products.filter((product) =>
-          selectedCategories.includes(product.category)
-        );
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | "none">("none");
+  const visibleProducts = products
+    .filter((product) =>
+      selectedCategories.length === 0
+        ? true
+        : selectedCategories.includes(product.category)
+    )
+    .filter((product) =>
+      product.name.toLowerCase().includes(searchKeyword.toLowerCase())
+    )
+    .sort((a, b) => {
+      if (sortOrder === "asc") return a.priceJPY - b.priceJPY;
+      if (sortOrder === "desc") return b.priceJPY - a.priceJPY;
+      return 0;
+    });
 
   useEffect(() => {
     const fetchRate = async () => {
@@ -57,6 +67,13 @@ export default function Home() {
     <main className="p-8">
       <h1 className="text-2xl font-bold mb-6">商品一覧</h1>
       <div className="mb-6">
+        <input
+          type="text"
+          placeholder="商品名で検索"
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+          className="w-full md:w-96 border px-4 py-2 rounded shadow-sm"
+        />
         <h2 className="text-md font-semibold mb-2">カテゴリで絞り込み</h2>
         <div className="flex flex-wrap gap-4">
           {categories.map((cat) => (
@@ -79,10 +96,25 @@ export default function Home() {
           ))}
         </div>
       </div>
+      <div className="mb-6">
+        <label className="mr-2 text-sm font-medium">価格で並び替え:</label>
+        <select
+          value={sortOrder}
+          onChange={(e) =>
+            setSortOrder(e.target.value as "asc" | "desc" | "none")
+          }
+          className="border px-2 py-1 rounded"
+        >
+          <option value="none">指定なし</option>
+          <option value="asc">安い順</option>
+          <option value="desc">高い順</option>
+        </select>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {visibleProducts.map((product) => (
           <ProductCard
             key={product.id}
+            id={product.id}
             name={product.name}
             priceJPY={product.priceJPY}
             category={product.category}

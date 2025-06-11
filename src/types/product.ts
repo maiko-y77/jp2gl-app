@@ -7,4 +7,5 @@ export type Product = {
   category: string
   availableFrom: Timestamp
   availableTo: Timestamp
-}
+  description?: string
+};
