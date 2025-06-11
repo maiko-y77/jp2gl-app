@@ -3,10 +3,10 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import ProductCard from "@/components/ProductCard";
 import { Product } from "@/types/product";
-import { fetchExchangeRateJPYtoCAD } from "@/lib/currency";
+import { useExchangeRate } from "@/context/ExchangeRateContext";
 
 export default function Home() {
-  const [exchangeRate, setExchangeRate] = useState<number>(0);
+  const exchangeRate = useExchangeRate();
   const categories = ["魚", "肉", "野菜", "フルーツ", "スイーツ"];
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -28,14 +28,6 @@ export default function Home() {
     });
 
   useEffect(() => {
-    const fetchRate = async () => {
-      const rate = await fetchExchangeRateJPYtoCAD();
-      setExchangeRate(rate);
-    };
-    fetchRate();
-  }, []);
-
-  useEffect(() => {
     const fetchData = async () => {
       const querySnapshot = await getDocs(collection(db, "products"));
       const now = new Date();
@@ -48,6 +40,7 @@ export default function Home() {
             name: d.name,
             priceJPY: d.priceJPY,
             category: d.category,
+            imageUrl: d.imageUrl,
             availableFrom: d.availableFrom,
             availableTo: d.availableTo,
           } as Product;
@@ -119,6 +112,7 @@ export default function Home() {
             priceJPY={product.priceJPY}
             category={product.category}
             priceCAD={Math.round(product.priceJPY * exchangeRate)}
+            imageUrl={product.imageUrl}
           />
         ))}
       </div>

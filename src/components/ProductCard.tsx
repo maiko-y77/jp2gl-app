@@ -6,6 +6,7 @@ type ProductCardProps = {
   priceJPY: number;
   priceCAD: number;
   category: string;
+  imageUrl?: string;
 };
 
 export default function ProductCard({
@@ -14,9 +15,17 @@ export default function ProductCard({
   priceJPY,
   priceCAD,
   category,
+  imageUrl,
 }: ProductCardProps) {
   return (
     <div className="border p-4 rounded shadow-sm flex flex-col justify-between">
+      {imageUrl && (
+        <img
+          src={imageUrl}
+          alt={name}
+          className="w-full h-48 object-cover mb-2 rounded"
+        />
+      )}
       <div>
         <h2 className="text-lg font-semibold">{name}</h2>
         <p className="text-sm text-gray-600">カテゴリ: {category}</p>

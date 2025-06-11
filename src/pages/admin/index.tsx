@@ -8,12 +8,12 @@ import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/router";
 import { onAuthStateChanged } from "firebase/auth";
-import { fetchExchangeRateJPYtoCAD } from "@/lib/currency";
+import { useExchangeRate } from "@/context/ExchangeRateContext";
 
 function AdminDashboard() {
   const [products, setProducts] = useState<Product[]>([]);
   const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [exchangeRate, setExchangeRate] = useState<number | null>(null);
+  const exchangeRate = useExchangeRate();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -42,14 +42,6 @@ function AdminDashboard() {
       }
     });
     return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    const fetchRate = async () => {
-      const rate = await fetchExchangeRateJPYtoCAD();
-      setExchangeRate(rate);
-    };
-    fetchRate();
   }, []);
 
   const handleDelete = async (id: string) => {

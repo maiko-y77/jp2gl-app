@@ -3,13 +3,14 @@ import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Product } from "@/types/product";
-import { fetchExchangeRateJPYtoCAD } from "@/lib/currency";
+import { useExchangeRate } from "@/context/ExchangeRateContext";
+import Link from "next/link";
 
 export default function ProductDetail() {
   const router = useRouter();
   const { id } = router.query;
   const [product, setProduct] = useState<Product | null>(null);
-  const [exchangeRate, setExchangeRate] = useState<number | null>(null);
+  const exchangeRate = useExchangeRate();
 
   useEffect(() => {
     if (!id || typeof id !== "string") return;
@@ -32,14 +33,6 @@ export default function ProductDetail() {
     fetchProduct();
   }, [id]);
 
-  useEffect(() => {
-    const fetchRate = async () => {
-      const rate = await fetchExchangeRateJPYtoCAD();
-      setExchangeRate(rate);
-    };
-    fetchRate();
-  }, []);
-
   if (!product) return <div className="p-6">読み込み中...</div>;
 
   return (
@@ -60,6 +53,12 @@ export default function ProductDetail() {
         表示期間: {product.availableFrom.toDate().toLocaleDateString()} ～{" "}
         {product.availableTo.toDate().toLocaleDateString()}
       </p>
+      <Link
+        href="/"
+        className="inline-block bg-gray-200 text-black px-4 py-2 rounded hover:bg-gray-300 mb-4"
+      >
+        ← 一覧に戻る
+      </Link>
     </div>
   );
 }

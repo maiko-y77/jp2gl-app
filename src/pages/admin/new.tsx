@@ -4,6 +4,7 @@ import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { uploadImageToCloudinary } from "@/lib/uploadImage";
 
 export default function NewProduct() {
   const [name, setName] = useState("");
@@ -13,27 +14,35 @@ export default function NewProduct() {
   const [availableFrom, setAvailableFrom] = useState("");
   const [availableTo, setAvailableTo] = useState("");
   const [description, setDescription] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      let imageUrl = "";
+      if (imageFile) {
+        imageUrl = await uploadImageToCloudinary(imageFile);
+      }
+
       await addDoc(collection(db, "products"), {
         name,
         priceJPY: Number(priceJPY),
         category,
         description,
+        imageUrl, // ← 保存
         availableFrom: Timestamp.fromDate(new Date(availableFrom)),
         availableTo: Timestamp.fromDate(new Date(availableTo)),
         createdAt: Timestamp.now(),
       });
+
       alert("登録完了！");
-      router.push("/"); // 一覧に戻す or /admin にも可
+      router.push("/admin");
     } catch (err) {
       console.error("登録失敗", err);
       alert("登録に失敗しました");
     }
   };
-
   return (
     <div className="max-w-md mx-auto mt-10 p-4 border rounded">
       <h1 className="text-xl font-bold mb-4">商品を登録</h1>
@@ -63,6 +72,28 @@ export default function NewProduct() {
             className="w-full border px-3 py-2 rounded"
             required
           />
+        </div>
+        <div>
+          <label className="block text-sm font-medium">商品画像</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                setImageFile(file);
+                setImagePreview(URL.createObjectURL(file));
+              }
+            }}
+            className="w-full border px-3 py-2 rounded"
+          />
+          {imagePreview && (
+            <img
+              src={imagePreview}
+              alt="Preview"
+              className="mt-2 w-32 h-auto rounded"
+            />
+          )}
         </div>
         <div>
           <label className="block text-sm font-medium">カテゴリ</label>

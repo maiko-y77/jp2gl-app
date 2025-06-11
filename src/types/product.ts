@@ -8,4 +8,5 @@ export type Product = {
   availableFrom: Timestamp
   availableTo: Timestamp
   description?: string
+  imageUrl?: string
 };
