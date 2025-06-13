@@ -9,7 +9,7 @@ import { uploadImageToCloudinary } from "@/lib/uploadImage";
 export default function NewProduct() {
   const [name, setName] = useState("");
   const [priceJPY, setPriceJPY] = useState("");
-  const [category, setCategory] = useState("野菜");
+  const [category, setCategory] = useState("Vegetables/野菜");
   const router = useRouter();
   const [availableFrom, setAvailableFrom] = useState("");
   const [availableTo, setAvailableTo] = useState("");
@@ -21,16 +21,19 @@ export default function NewProduct() {
     e.preventDefault();
     try {
       let imageUrl = "";
+      let publicId = "";
       if (imageFile) {
-        imageUrl = await uploadImageToCloudinary(imageFile);
+        const result = await uploadImageToCloudinary(imageFile);
+        imageUrl = result.imageUrl;
+        publicId = result.publicId;
       }
-
       await addDoc(collection(db, "products"), {
         name,
         priceJPY: Number(priceJPY),
         category,
         description,
         imageUrl, // ← 保存
+        publicId,
         availableFrom: Timestamp.fromDate(new Date(availableFrom)),
         availableTo: Timestamp.fromDate(new Date(availableTo)),
         createdAt: Timestamp.now(),
@@ -102,11 +105,11 @@ export default function NewProduct() {
             onChange={(e) => setCategory(e.target.value)}
             className="w-full border px-3 py-2 rounded"
           >
-            <option value="魚">魚</option>
-            <option value="肉">肉</option>
-            <option value="野菜">野菜</option>
-            <option value="フルーツ">フルーツ</option>
-            <option value="スイーツ">スイーツ</option>
+            <option value="Seafoods/魚介類">Seafoods/魚介類</option>
+            <option value="Meat/肉類">Meat/肉類</option>
+            <option value="Vegetables/野菜">Vegetables/野菜</option>
+            <option value="Fruit/果物">Fruit/果物</option>
+            <option value="Sweets/スイーツ">Sweets/スイーツ</option>
           </select>
         </div>
         <div>

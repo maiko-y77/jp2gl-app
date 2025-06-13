@@ -9,4 +9,5 @@ export type Product = {
   availableTo: Timestamp
   description?: string
   imageUrl?: string
+  publicId?: string
 };

@@ -5,6 +5,7 @@ import { db } from "@/lib/firebase";
 import { Product } from "@/types/product";
 import withAuth from "@/lib/withAuth";
 import Link from "next/link";
+import { uploadImageToCloudinary } from "@/lib/uploadImage";
 
 function EditProduct() {
   const router = useRouter();
@@ -16,6 +17,8 @@ function EditProduct() {
   const [availableFrom, setAvailableFrom] = useState("");
   const [availableTo, setAvailableTo] = useState("");
   const [description, setDescription] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id || typeof id !== "string") return;
@@ -42,6 +45,36 @@ function EditProduct() {
     e.preventDefault();
     if (!id || typeof id !== "string") return;
     const docRef = doc(db, "products", id);
+
+    let updatedImageUrl = product?.imageUrl || "";
+    let updatedPublicId = product?.publicId || "";
+
+    // 古い画像を削除
+    if (imageFile && product?.publicId) {
+      try {
+        await fetch("/api/delete-image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ publicId: product.publicId }),
+        });
+      } catch (err) {
+        console.error("旧画像の削除に失敗", err);
+      }
+    }
+
+    // 新しい画像をアップロード
+    if (imageFile) {
+      try {
+        const result = await uploadImageToCloudinary(imageFile);
+        updatedImageUrl = result.imageUrl;
+        updatedPublicId = result.publicId;
+      } catch (err) {
+        console.error("画像アップロード失敗", err);
+        alert("画像のアップロードに失敗しました");
+        return;
+      }
+    }
+
     await updateDoc(docRef, {
       name,
       priceJPY: Number(priceJPY),
@@ -49,7 +82,10 @@ function EditProduct() {
       description,
       availableFrom: Timestamp.fromDate(new Date(availableFrom)),
       availableTo: Timestamp.fromDate(new Date(availableTo)),
+      imageUrl: updatedImageUrl,
+      publicId: updatedPublicId,
     });
+
     alert("更新しました");
     router.push("/admin");
   };
@@ -87,17 +123,50 @@ function EditProduct() {
           />
         </div>
         <div>
+          <label className="block text-sm font-medium">商品画像</label>
+
+          {product.imageUrl && !imagePreview && (
+            <img
+              src={product.imageUrl}
+              alt="current"
+              className="w-32 mb-2 rounded"
+            />
+          )}
+
+          {imagePreview && (
+            <img
+              src={imagePreview}
+              alt="preview"
+              className="w-32 mb-2 rounded"
+            />
+          )}
+
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                setImageFile(file);
+                setImagePreview(URL.createObjectURL(file));
+              }
+            }}
+            className="w-full border px-3 py-2 rounded"
+          />
+        </div>
+
+        <div>
           <label className="block text-sm font-medium">カテゴリ</label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             className="w-full border px-3 py-2 rounded"
           >
-            <option value="魚">魚</option>
-            <option value="肉">肉</option>
-            <option value="野菜">野菜</option>
-            <option value="フルーツ">フルーツ</option>
-            <option value="スイーツ">スイーツ</option>
+            <option value="Seafoods/魚介">Seafoods/魚介</option>
+            <option value="Meat/肉類">Meat/肉類</option>
+            <option value="Vegetables/野菜">Vegetables/野菜</option>
+            <option value="Fruit/果物">Fruit/果物</option>
+            <option value="Sweets/スイーツ">Sweets/スイーツ</option>
           </select>
         </div>
         <div>

@@ -27,6 +27,7 @@ function AdminDashboard() {
           category: d.category,
           availableFrom: d.availableFrom,
           availableTo: d.availableTo,
+          publicId: d.publicId,
         } as Product;
       });
       setProducts(data);
@@ -44,9 +45,24 @@ function AdminDashboard() {
     return () => unsubscribe();
   }, []);
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string, publicId?: string) => {
     const ok = confirm("この商品を本当に削除しますか？");
     if (!ok) return;
+
+    // Cloudinary画像も削除（publicIdがある場合のみ）
+    if (publicId) {
+      try {
+        await fetch("/api/delete-image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ publicId }),
+        });
+      } catch (err) {
+        console.error("Cloudinary画像の削除に失敗", err);
+      }
+    }
+
+    // Firestoreから削除
     await deleteDoc(doc(db, "products", id));
     setProducts((prev) => prev.filter((p) => p.id !== id));
   };
@@ -109,7 +125,7 @@ function AdminDashboard() {
                 編集
               </Link>
               <button
-                onClick={() => handleDelete(product.id)}
+                onClick={() => handleDelete(product.id, product.publicId)}
                 className="text-sm bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
               >
                 削除

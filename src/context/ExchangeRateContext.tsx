@@ -16,7 +16,7 @@ export const ExchangeRateProvider = ({
       if (cached) {
         const { rate, timestamp } = JSON.parse(cached);
         const now = Date.now();
-        const isFresh = now - timestamp < 1000 * 60 * 60 * 2; // 2時間以内
+        const isFresh = now - timestamp < 1000 * 60 * 60 * 24; // 24時間以内
         if (isFresh) {
           setExchangeRate(rate);
           return;

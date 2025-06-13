@@ -7,7 +7,13 @@ import { useExchangeRate } from "@/context/ExchangeRateContext";
 
 export default function Home() {
   const exchangeRate = useExchangeRate();
-  const categories = ["魚", "肉", "野菜", "フルーツ", "スイーツ"];
+  const categories = [
+    "Seafoods/魚介類",
+    "Meat/肉類",
+    "Vegetables/野菜",
+    "Fruit/果物",
+    "Sweets/スイーツ",
+  ];
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [searchKeyword, setSearchKeyword] = useState("");
@@ -58,16 +64,16 @@ export default function Home() {
 
   return (
     <main className="p-8">
-      <h1 className="text-2xl font-bold mb-6">商品一覧</h1>
+      <h1 className="text-2xl font-bold mb-6">The Wild Table Canada</h1>
       <div className="mb-6">
         <input
           type="text"
-          placeholder="商品名で検索"
+          placeholder="Search by product name"
           value={searchKeyword}
           onChange={(e) => setSearchKeyword(e.target.value)}
           className="w-full md:w-96 border px-4 py-2 rounded shadow-sm"
         />
-        <h2 className="text-md font-semibold mb-2">カテゴリで絞り込み</h2>
+        <h2 className="text-md font-semibold mb-2">Category</h2>
         <div className="flex flex-wrap gap-4">
           {categories.map((cat) => (
             <label key={cat} className="flex items-center gap-2">
@@ -90,7 +96,7 @@ export default function Home() {
         </div>
       </div>
       <div className="mb-6">
-        <label className="mr-2 text-sm font-medium">価格で並び替え:</label>
+        <label className="mr-2 text-sm font-medium">Sort by price:</label>
         <select
           value={sortOrder}
           onChange={(e) =>
@@ -98,7 +104,7 @@ export default function Home() {
           }
           className="border px-2 py-1 rounded"
         >
-          <option value="none">指定なし</option>
+          <option value="none">Unspecified</option>
           <option value="asc">安い順</option>
           <option value="desc">高い順</option>
         </select>

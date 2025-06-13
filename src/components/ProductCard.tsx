@@ -28,7 +28,7 @@ export default function ProductCard({
       )}
       <div>
         <h2 className="text-lg font-semibold">{name}</h2>
-        <p className="text-sm text-gray-600">カテゴリ: {category}</p>
+        <p className="text-sm text-gray-600">Category: {category}</p>
         {/* <p className="text-sm font-bold text-blue-600 mt-1">
           ¥{priceJPY.toLocaleString()} JPY
         </p> */}
