@@ -46,7 +46,7 @@ export default function ProductDetail() {
         />
       )}
       <h1 className="text-2xl font-bold mb-2">{product.name}</h1>
-      <p className="text-gray-700">カテゴリ: {product.category}</p>
+      <p className="text-gray-700">Category: {product.category}</p>
       {exchangeRate && (
         <p className="text-blue-600 font-semibold mt-2">
           ${Math.round(product.priceJPY * exchangeRate).toFixed(2)} CAD
@@ -58,14 +58,14 @@ export default function ProductDetail() {
         </p>
       )}
       <p className="text-sm mt-1 text-gray-500">
-        表示期間: {product.availableFrom.toDate().toLocaleDateString()} ～{" "}
+        Display period: {product.availableFrom.toDate().toLocaleDateString()} ～{" "}
         {product.availableTo.toDate().toLocaleDateString()}
       </p>
       <Link
         href="/"
         className="inline-block bg-gray-200 text-black px-4 py-2 rounded hover:bg-gray-300 mb-4"
       >
-        ← 一覧に戻る
+        ← Return to list
       </Link>
     </div>
   );

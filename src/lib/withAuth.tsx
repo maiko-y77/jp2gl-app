@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/router";
+import type { ComponentType } from "react";
 
-export default function withAuth<P>(WrappedComponent: React.ComponentType<P>) {
-  return function Protected(props: P) {
+export default function withAuth<P extends Record<string, unknown>>(
+  WrappedComponent: ComponentType<P>
+): ComponentType<P> {
+  const Protected = (props: P) => {
     const [loading, setLoading] = useState(true);
     const [authenticated, setAuthenticated] = useState(false);
     const router = useRouter();
@@ -18,6 +21,7 @@ export default function withAuth<P>(WrappedComponent: React.ComponentType<P>) {
         }
         setLoading(false);
       });
+
       return () => unsubscribe();
     }, [router]);
 
@@ -26,4 +30,6 @@ export default function withAuth<P>(WrappedComponent: React.ComponentType<P>) {
 
     return <WrappedComponent {...props} />;
   };
+
+  return Protected;
 }

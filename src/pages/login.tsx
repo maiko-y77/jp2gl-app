@@ -14,9 +14,11 @@ export default function Login() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       router.push("/admin");
-    } catch (err: any) {
-      console.error("Login failed:", err.message);
-      setError("ログインに失敗しました");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error("Login failed:", err.message);
+        setError("ログインに失敗しました");
+      }
     }
   };
 

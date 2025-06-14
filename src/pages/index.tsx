@@ -4,6 +4,7 @@ import { db } from "@/lib/firebase";
 import ProductCard from "@/components/ProductCard";
 import { Product } from "@/types/product";
 import { useExchangeRate } from "@/context/ExchangeRateContext";
+import Link from "next/link";
 
 export default function Home() {
   const exchangeRate = useExchangeRate();
@@ -65,6 +66,11 @@ export default function Home() {
   return (
     <main className="p-8">
       <h1 className="text-2xl font-bold mb-6">The Wild Table Canada</h1>
+      <nav>
+        <Link href="/login" className="hover:underline text-sm">
+          出品者ログイン
+        </Link>
+      </nav>
       <div className="mb-6">
         <input
           type="text"
@@ -105,22 +111,22 @@ export default function Home() {
           className="border px-2 py-1 rounded"
         >
           <option value="none">Unspecified</option>
-          <option value="asc">安い順</option>
-          <option value="desc">高い順</option>
+          <option value="asc">ASC</option>
+          <option value="desc">DESC</option>
         </select>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {visibleProducts.map((product) => (
-          <ProductCard
-            key={product.id}
-            id={product.id}
-            name={product.name}
-            priceJPY={product.priceJPY}
-            category={product.category}
-            priceCAD={Math.round(product.priceJPY * exchangeRate)}
-            imageUrl={product.imageUrl}
-          />
-        ))}
+        {exchangeRate !== null &&
+          visibleProducts.map((product) => (
+            <ProductCard
+              key={product.id}
+              id={product.id}
+              name={product.name}
+              category={product.category}
+              priceCAD={Math.round(product.priceJPY * exchangeRate)}
+              imageUrl={product.imageUrl}
+            />
+          ))}
       </div>
     </main>
   );
