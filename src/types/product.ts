@@ -2,7 +2,8 @@ import type { Timestamp } from "firebase/firestore"
 
 export type Product = {
   id: string
-  name: string
+   nameEn: string
+  nameJa: string
   priceJPY: number
   category: string
   availableFrom: Timestamp

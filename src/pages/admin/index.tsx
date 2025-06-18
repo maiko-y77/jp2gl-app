@@ -22,7 +22,8 @@ function AdminDashboard() {
         const d = doc.data();
         return {
           id: doc.id,
-          name: d.name,
+          nameEn: d.nameEn,
+          nameJa: d.nameJa,
           priceJPY: d.priceJPY,
           category: d.category,
           availableFrom: d.availableFrom,
@@ -109,7 +110,9 @@ function AdminDashboard() {
       <ul className="space-y-4">
         {products.map((product) => (
           <li key={product.id} className="border p-4 rounded shadow-sm">
-            <h2 className="font-semibold">{product.name}</h2>
+            <h2 className="font-semibold">
+              {product.nameEn} / {product.nameJa}
+            </h2>
             <p className="text-sm text-gray-600">
               ¥{product.priceJPY} / {product.category}
             </p>

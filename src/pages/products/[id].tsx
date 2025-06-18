@@ -21,7 +21,8 @@ export default function ProductDetail() {
         const data = docSnap.data();
         setProduct({
           id: docSnap.id,
-          name: data.name,
+          nameEn: data.nameEn,
+          nameJa: data.nameJa,
           priceJPY: data.priceJPY,
           category: data.category,
           availableFrom: data.availableFrom,
@@ -41,11 +42,13 @@ export default function ProductDetail() {
       {product.imageUrl && (
         <img
           src={product.imageUrl}
-          alt={product.name}
+          alt={product.nameEn}
           className="w-full h-64 object-cover mb-4 rounded"
         />
       )}
-      <h1 className="text-2xl font-bold mb-2">{product.name}</h1>
+      <h1 className="text-2xl font-bold mb-2">
+        {product.nameEn} / {product.nameJa}
+      </h1>
       <p className="text-gray-700">Category: {product.category}</p>
       {exchangeRate && (
         <p className="text-blue-600 font-semibold mt-2">

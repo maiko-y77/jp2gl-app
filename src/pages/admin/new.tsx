@@ -7,7 +7,8 @@ import Link from "next/link";
 import { uploadImageToCloudinary } from "@/lib/uploadImage";
 
 export default function NewProduct() {
-  const [name, setName] = useState("");
+  const [nameEn, setNameEn] = useState("");
+  const [nameJa, setNameJa] = useState("");
   const [priceJPY, setPriceJPY] = useState("");
   const [category, setCategory] = useState("Vegetables/野菜");
   const router = useRouter();
@@ -28,7 +29,8 @@ export default function NewProduct() {
         publicId = result.publicId;
       }
       await addDoc(collection(db, "products"), {
-        name,
+        nameEn,
+        nameJa,
         priceJPY: Number(priceJPY),
         category,
         description,
@@ -57,11 +59,21 @@ export default function NewProduct() {
       </Link>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium">商品名</label>
+          <label className="block text-sm font-medium">商品名（英語）</label>
           <input
             type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={nameEn}
+            onChange={(e) => setNameEn(e.target.value)}
+            className="w-full border px-3 py-2 rounded"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium">商品名（日本語）</label>
+          <input
+            type="text"
+            value={nameJa}
+            onChange={(e) => setNameJa(e.target.value)}
             className="w-full border px-3 py-2 rounded"
             required
           />

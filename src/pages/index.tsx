@@ -26,7 +26,9 @@ export default function Home() {
         : selectedCategories.includes(product.category)
     )
     .filter((product) =>
-      product.name.toLowerCase().includes(searchKeyword.toLowerCase())
+      `${product.nameEn} ${product.nameJa}`
+        .toLowerCase()
+        .includes(searchKeyword.toLowerCase())
     )
     .sort((a, b) => {
       if (sortOrder === "asc") return a.priceJPY - b.priceJPY;
@@ -44,7 +46,8 @@ export default function Home() {
           const d = doc.data();
           return {
             id: doc.id,
-            name: d.name,
+            nameEn: d.nameEn,
+            nameJa: d.nameJa,
             priceJPY: d.priceJPY,
             category: d.category,
             imageUrl: d.imageUrl,
@@ -121,7 +124,8 @@ export default function Home() {
             <ProductCard
               key={product.id}
               id={product.id}
-              name={product.name}
+              nameEn={product.nameEn}
+              nameJa={product.nameJa}
               category={product.category}
               priceCAD={Math.round(product.priceJPY * exchangeRate)}
               imageUrl={product.imageUrl}

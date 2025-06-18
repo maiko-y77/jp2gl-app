@@ -11,7 +11,8 @@ function EditProduct() {
   const router = useRouter();
   const { id } = router.query;
   const [product, setProduct] = useState<Product | null>(null);
-  const [name, setName] = useState("");
+  const [nameEn, setNameEn] = useState("");
+  const [nameJa, setNameJa] = useState("");
   const [priceJPY, setPriceJPY] = useState("");
   const [category, setCategory] = useState("");
   const [availableFrom, setAvailableFrom] = useState("");
@@ -28,7 +29,8 @@ function EditProduct() {
       if (docSnap.exists()) {
         const data = docSnap.data();
         setProduct({ id: docSnap.id, ...data } as Product);
-        setName(data.name);
+        setNameEn(data.nameEn || "");
+        setNameJa(data.nameJa || "");
         setPriceJPY(data.priceJPY.toString());
         setCategory(data.category);
         setAvailableFrom(
@@ -76,7 +78,8 @@ function EditProduct() {
     }
 
     await updateDoc(docRef, {
-      name,
+      nameEn,
+      nameJa,
       priceJPY: Number(priceJPY),
       category,
       description,
@@ -103,11 +106,21 @@ function EditProduct() {
       </Link>
       <form onSubmit={handleUpdate} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium">商品名</label>
+          <label className="block text-sm font-medium">商品名（英語）</label>
           <input
             type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={nameEn}
+            onChange={(e) => setNameEn(e.target.value)}
+            className="w-full border px-3 py-2 rounded"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium">商品名（日本語）</label>
+          <input
+            type="text"
+            value={nameJa}
+            onChange={(e) => setNameJa(e.target.value)}
             className="w-full border px-3 py-2 rounded"
             required
           />

@@ -3,7 +3,8 @@ import Image from "next/image";
 
 type ProductCardProps = {
   id: string;
-  name: string;
+  nameEn: string;
+  nameJa: string;
   priceCAD: number;
   category: string;
   imageUrl?: string;
@@ -11,7 +12,8 @@ type ProductCardProps = {
 
 export default function ProductCard({
   id,
-  name,
+  nameEn,
+  nameJa,
   priceCAD,
   category,
   imageUrl,
@@ -21,14 +23,17 @@ export default function ProductCard({
       {imageUrl && (
         <Image
           src={imageUrl}
-          alt={name}
+          alt={nameEn}
           width={300}
           height={200}
           className="w-full h-48 object-cover mb-2 rounded"
         />
       )}
       <div>
-        <h2 className="text-lg font-semibold">{name}</h2>
+        <h2 className="text-lg font-semibold">
+          {nameEn} / {nameJa}
+        </h2>
+
         <p className="text-sm text-gray-600">Category: {category}</p>
         {/* <p className="text-sm font-bold text-blue-600 mt-1">
           ¥{priceJPY.toLocaleString()} JPY
