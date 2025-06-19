@@ -26,7 +26,7 @@ export default function Home() {
         : selectedCategories.includes(product.category)
     )
     .filter((product) =>
-      `${product.nameEn} ${product.nameJa}`
+      `${product.nameEn ?? ""} ${product.nameJa ?? ""}`
         .toLowerCase()
         .includes(searchKeyword.toLowerCase())
     )
@@ -46,8 +46,8 @@ export default function Home() {
           const d = doc.data();
           return {
             id: doc.id,
-            nameEn: d.nameEn,
-            nameJa: d.nameJa,
+            nameEn: d.nameEn ?? "",
+            nameJa: d.nameJa ?? "",
             priceJPY: d.priceJPY,
             category: d.category,
             imageUrl: d.imageUrl,
